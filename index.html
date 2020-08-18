@@ -1,0 +1,299 @@
+<!DOCTYPE html> 
+<!--
+ Copyright (c) 2020 Alexandru Catrina <alex@codeissues.net>
+ 
+ Permission is hereby granted, free of charge, to any person obtaining a copy
+ of this software and associated documentation files (the "Software"), to deal
+ in the Software without restriction, including without limitation the rights
+ to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ copies of the Software, and to permit persons to whom the Software is
+ furnished to do so, subject to the following conditions:
+ 
+ The above copyright notice and this permission notice shall be included in
+ all copies or substantial portions of the Software.
+ 
+ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ SOFTWARE. 
+-->
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="description" content="Samplest is a CLI development tool to design and mockup RESTful APIs">
+        <title>Build RESTful APIs with Samplest</title>
+        <link rel="stylesheet" href="vendor/bulma.min.css">
+        <style type="text/css">
+            body {
+                background-color: #fefefe;
+                user-select: none;
+            }
+            input[type="checkbox"] {
+                position: absolute;
+                top: 5px;
+                left: -25px;
+            }
+            #nav {
+                margin: 0;
+                padding: 0;
+                background: #fefefe;
+                position: relative;
+                border-bottom: 1px solid #3273dc;
+                line-height: 3;
+                overflow: hidden;
+            }
+            #nav li {
+                display: table-cell;
+                margin: 0 5px 0 0;
+                color: #fff;
+                padding: 0 20px;
+                background-color: #b8d1fb;
+                position: relative;
+                border-radius: 2px 2px 0 0;
+                float: left;
+                user-select: none;
+            }
+            #nav li.active {
+                background-color: #3273dc;
+            }
+            #nav li a {
+                vertical-align: middle;
+                margin: -5px 0 0 15px;
+            }
+            .panel {
+                background-color: #fff;
+                border: 1px solid #3273dc;
+                border-image: linear-gradient(to bottom, #3273dc, #fefefe) 1 100%;
+                padding: 50px 0;
+                box-shadow: -10px -20px 20px #e0e0e0;
+            }
+            .panel[rel="response"] input[type="radio"] {
+                display: block;
+                margin: 10px auto;
+            }
+            .panel[rel="response"] label.radio {
+                margin: 0 12px;
+            }
+        </style>
+    </head>
+    <body>
+        <section class="hero">
+            <div class="hero-body">
+                <div class="container">
+                    <button class="button is-pulled-right is-large is-warning is-focused" onclick="download()">
+                        <span class="icon is-small">
+                            <i class="fas fa-download"></i>
+                        </span>
+                        <span>Download ZIP</span>
+                    </button>
+                    <h1 class="title">Builder UI for Samplest</h1>
+                    <h2 class="subtitle">Samplest is a CLI development tool to design and mockup RESTful APIs</h2>
+                    <a class="button" href="https://github.com/lexndru/samplest" target="_blank" title="Samplest CLI source code">
+                        <span class="icon">
+                            <i class="fab fa-github"></i>
+                        </span>
+                        <span>Get source code</span>
+                    </a>
+                    <a class="button" href="https://www.npmjs.com/package/samplest" target="_blank" title="Samplest CLI npm package">
+                        <span class="icon">
+                            <i class="fab fa-npm"></i>
+                        </span>
+                        <span>Install with npm</span>
+                    </a>
+                </div>
+            </div>
+        </section><!-- close hero -->
+
+        <div class="container is-widescreen">
+            <div class="columns">
+                <div class="column is-one-quarter mt-6">
+                    <aside class="menu">
+                        <p class="menu-label">Happy path</p>
+                        <ul class="menu-list">
+                            <li><a data-panel="request" class="is-active">Define request</a></li>
+                            <li><a data-panel="response">Define response</a></li>
+                        </ul>
+                        <p class="menu-label">Exceptions</p>
+                        <ul class="menu-list">
+                            <li><a class="has-text-grey-light" onclick="alert('Unsupported panel, yet')">Define new exception</a></li>
+                        </ul>
+                    </aside>
+                </div>
+                <div class="column">
+                    <ul id="nav">
+                        <li id="createNewTab">
+                            <i class="fas fa-plus"></i>
+                        </li>
+                    </ul>
+                    <div class="panel" rel="request">
+                        <div class="columns">
+                            <div class="column is-3">
+                                <div class="field is-pulled-right">
+                                    <label class="label">Method</label>
+                                    <div class="control has-icons-left">
+                                        <div class="select">
+                                            <select name="request.method">
+                                                <option value="head">HEAD</option>
+                                                <option selected value="get">GET</option>
+                                                <option value="post">POST</option>
+                                                <option value="put">PUT</option>
+                                                <option value="patch">PATCH</option>
+                                                <option value="delete">DELETE</option>
+                                            </select>
+                                        </div>
+                                        <div class="icon is-small is-left">
+                                            <i class="fas fa-code"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="column is-7">
+                                <div class="field">
+                                    <label class="label">Endpoint</label>
+                                    <div class="control has-icons-left">
+                                        <input name="request.route" class="input" type="text" placeholder="/api/:version/endpoint">
+                                        <span class="icon is-small is-left">
+                                            <i class="fas fa-link"></i>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <hr>
+                        <div class="columns">
+                            <div class="column is-offset-3">
+                                <label class="checkbox">
+                                    <input name="_request.headers" type="checkbox">
+                                    Request must send <strong>headers</strong><br>
+                                    <small>Write any number of headers as <code>Map&lt;string, string&gt;</code> in JSON format</small>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="columns is-hidden" rel="_request.headers">
+                            <div class="column is-7 is-offset-3">
+                                <div class="field">
+                                    <div class="control">
+                                        <textarea name="request.headers" class="textarea is-small" placeholder="{ ... }"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="columns">
+                            <div class="column is-offset-3">
+                                <label class="checkbox">
+                                    <input name="_request.payload" type="checkbox">
+                                    Request must send <strong>payload</strong><br>
+                                    <small>Write a payload as <code>Map&lt;string, any&gt;</code> in JSON format (can be nested)</small>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="columns is-hidden" rel="_request.payload">
+                            <div class="column is-7 is-offset-3">
+                                <div class="field">
+                                    <div class="control">
+                                        <textarea name="request.payload" class="textarea is-small" placeholder="{ ... }"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div><!-- close request -->
+                    <div class="panel is-hidden" rel="response">
+                        <div class="columns">
+                            <div class="column is-7 is-offset-1">
+                                <div class="control">
+                                    <label class="radio">
+                                        <input type="radio" name="response.status" value="200" checked> 200
+                                    </label>
+                                    <label class="radio">
+                                        <input type="radio" name="response.status" value="201"> 201
+                                    </label>
+                                    <label class="radio">
+                                        <input type="radio" name="response.status" value="202"> 202
+                                    </label>
+                                    <label class="radio">
+                                        <input type="radio" name="response.status" value="204"> 204
+                                    </label>
+                                    <label class="radio">
+                                        <input type="radio" name="response.status" value="400"> 400
+                                    </label>
+                                    <label class="radio">
+                                        <input type="radio" name="response.status" value="401"> 401
+                                    </label>
+                                    <label class="radio">
+                                        <input type="radio" name="response.status" value="403"> 403
+                                    </label>
+                                    <label class="radio">
+                                        <input type="radio" name="response.status" value="404"> 404
+                                    </label>
+                                    <label class="radio">
+                                        <input type="radio" name="response.status" value="409"> 409
+                                    </label>
+                                    <label class="radio">
+                                        <input type="radio" name="response.status" rel="custom" value="200"> ???
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="column is-2">
+                                <div class="field">
+                                    <label class="label" for="status">Custom HTTP code</label>
+                                    <div class="control">
+                                        <input name="response.status" id="status" class="input" type="number" placeholder="e.g. 501">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <hr>
+                        <div class="columns">
+                            <div class="column is-offset-3">
+                                <label class="checkbox">
+                                    <input name="_response.headers" type="checkbox">
+                                    Response must send <strong>headers</strong><br>
+                                    <small>Write any number of headers as <code>Map&lt;string, string&gt;</code> in JSON format</small>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="columns is-hidden" rel="_response.headers">
+                            <div class="column is-7 is-offset-3">
+                                <div class="field">
+                                    <div class="control">
+                                        <textarea name="response.headers" class="textarea is-small" placeholder="{ ... }"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="columns">
+                            <div class="column is-offset-3">
+                                <label class="checkbox">
+                                    <input name="_response.data" type="checkbox">
+                                    Response must send <strong>content</strong><br>
+                                    <small>Write the content as <code>object | object[]</code> in JSON format (can be nested)</small>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="columns is-hidden" rel="_response.data">
+                            <div class="column is-7 is-offset-3">
+                                <div class="field">
+                                    <div class="control">
+                                        <textarea name="response.data" class="textarea is-small" placeholder="{ ... }"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div><!-- close response -->
+                    <div rel="exception">
+                        <!-- must be implemented -->
+                    </div>
+                </div><!-- right column -->
+            </div><!-- both columns -->
+        </div><!-- close container -->
+
+        <script src="vendor/fontawesome.js"></script>
+        <script src="vendor/FileSaver.min.js"></script>
+        <script src="vendor/jszip.min.js"></script>
+        <script src="script.js"></script>
+    </body>
+</html>
