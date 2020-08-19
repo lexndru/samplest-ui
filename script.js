@@ -278,6 +278,21 @@ function addTabToMenu (name) {
     }
   })
 
+  tab.addEventListener('dblclick', (e) => {
+    if (e.target === tab) {
+      const newName = prompt(`Rename tab "${tab.textContent}"`)
+      if (newName) {
+        if (Tabs.has(newName)) {
+          alert(`Another tab with the name "${newName}" already exists`)
+        } else if (newName.trim() !== tab.textContent.trim()) {
+          Tabs.delete(tab.textContent)
+          tab.firstChild.textContent = newName.trim()
+          Tabs.add(tab.textContent)
+        }
+      }
+    }
+  })
+
   Memory.set(tab, {
     'request.method': Fields['request.method'].defaults,
     'response.status': Fields['response.status'].defaults
@@ -384,7 +399,6 @@ function download () {
 
 // Register event listeners
 !(async function () {
-
   // Restore memory state (if available)
   const previousState = localStorage.getItem('samplests')
   if (previousState !== null) {
@@ -416,9 +430,7 @@ function download () {
     localStorage.setItem('samplests', JSON.stringify(state))
 
     // https://developer.mozilla.org/en-US/docs/Web/API/WindowEventHandlers/onbeforeunload
-    e.returnValue = 'Your workspace will be saved locally' 
-
-    return
+    e.returnValue = 'Your workspace will be saved locally'
   })
 
   // Render selected panel
