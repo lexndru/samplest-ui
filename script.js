@@ -75,7 +75,7 @@ const TextField = {
 }
 
 /**
- * List field handler.
+ * Radio field exception handler.
  *
  * @type {{
  *  defaults: string
@@ -84,8 +84,8 @@ const TextField = {
  * }}
  *
  */
-const ListField = {
-  defaults: '',
+const RadioFieldException = {
+  defaults: '200',
 
   /**
    * Get the value of radio.
@@ -105,8 +105,16 @@ const ListField = {
     for (const each of all) {
       if (each.value === data) {
         each.checked = true
+        return
       }
     }
+
+    const custom = document.querySelector(`[name="${elem.name}"][rel="custom"]`)
+    custom.value = data
+    custom.checked = true
+
+    const customInput = document.getElementById('status')
+    customInput.value = data
   }
 }
 
@@ -154,7 +162,7 @@ const Fields = {
   '_request.payload': BoolField,
 
   // Response
-  'response.status': Object.assign({}, ListField, { defaults: '200' }),
+  'response.status': Object.assign({}, RadioFieldException),
   'response.headers': Object.assign({}, TextField, { set: formatJson }),
   'response.data': Object.assign({}, TextField, { set: formatJson }),
   '_response.headers': BoolField,
