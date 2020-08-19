@@ -1,23 +1,23 @@
 /**
  * Copyright (c) 2020 Alexandru Catrina <alex@codeissues.net>
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
  * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE. 
+ * SOFTWARE.
  */
 'use strict'
 
@@ -30,18 +30,18 @@
  * @returns void
  */
 function formatJson (elem, data) {
-    if (! data) {
-        elem.value = ''
-        return
-    }
+  if (!data) {
+    elem.value = ''
+    return
+  }
 
-    try {
-        const json = JSON.parse(data)
-        elem.value = JSON.stringify(json, null, 4)
-        elem.classList.remove('is-danger')
-    } catch (e) {
-        elem.classList.add('is-danger')
-    }
+  try {
+    const json = JSON.parse(data)
+    elem.value = JSON.stringify(json, null, 4)
+    elem.classList.remove('is-danger')
+  } catch (e) {
+    elem.classList.add('is-danger')
+  }
 }
 
 /**
@@ -54,24 +54,24 @@ function formatJson (elem, data) {
  * }}
  */
 const TextField = {
-    defaults: '',
+  defaults: '',
 
-    /**
+  /**
      * Get the value of an input, textarea or select element.
      *
      * @param {HTMLElement} elem An input, textarea or select
      * @returns {string}
      */
-    get: (elem) => elem.value,
+  get: (elem) => elem.value,
 
-    /**
+  /**
      * Set the value for an input, textarea or select element.
      *
      * @param {HTMLElement} elem An input, textarea or select
      * @param {string} data
      * @returns void
      */
-    set: (elem, data) => elem.value = data
+  set: (elem, data) => elem.value = data
 }
 
 /**
@@ -84,22 +84,22 @@ const TextField = {
  * }}
  */
 const BoolField = {
-    defaults: false,
+  defaults: false,
 
-    /**
+  /**
      * Get the value of checked or a radio element.
      *
      * @param {HTMLElement} elem
      */
-    get: (elem) => !! elem.checked,
+  get: (elem) => !!elem.checked,
 
-    /**
+  /**
      * Set the value for a checkbox or a radio element.
      *
      * @param {HTMLElement} elem
      * @param {boolean} data
      */
-    set: (elem, data) => elem.checked = !! data
+  set: (elem, data) => elem.checked = !!data
 }
 
 /**
@@ -109,24 +109,24 @@ const BoolField = {
  */
 const Fields = {
 
-    // Request
-    'request.route'     : TextField, 
-    'request.method'    : Object.assign({}, TextField, { defaults: 'get' }),
-    'request.headers'   : Object.assign({}, TextField, { set: formatJson }),
-    'request.payload'   : Object.assign({}, TextField, { set: formatJson }),
-    '_request.headers'  : BoolField,
-    '_request.payload'  : BoolField,
-    
-    // Response
-    'response.status'   : Object.assign({}, TextField, { defaults: 200 }),
-    'response.headers'  : Object.assign({}, TextField, { set: formatJson }),
-    'response.data'     : Object.assign({}, TextField, { set: formatJson }),
-    '_response.headers' : BoolField,
-    '_response.data'    : BoolField,
+  // Request
+  'request.route': TextField,
+  'request.method': Object.assign({}, TextField, { defaults: 'get' }),
+  'request.headers': Object.assign({}, TextField, { set: formatJson }),
+  'request.payload': Object.assign({}, TextField, { set: formatJson }),
+  '_request.headers': BoolField,
+  '_request.payload': BoolField,
+
+  // Response
+  'response.status': Object.assign({}, TextField, { defaults: 200 }),
+  'response.headers': Object.assign({}, TextField, { set: formatJson }),
+  'response.data': Object.assign({}, TextField, { set: formatJson }),
+  '_response.headers': BoolField,
+  '_response.data': BoolField
 }
 
 /**
- * Memory is a public temporary storage to track existing fields (request, 
+ * Memory is a public temporary storage to track existing fields (request,
  * response and exceptions) corelated to a tab.
  *
  * @type {Map<HTMLElement, Record<string, string>>}
@@ -134,7 +134,7 @@ const Fields = {
 const Memory = new Map()
 
 /**
- * Tabs is a public temporary storage to perserve uniqueness among user's 
+ * Tabs is a public temporary storage to perserve uniqueness among user's
  * tabs.
  *
  * @type {Set<string>}
@@ -151,28 +151,28 @@ const Tabs = new Set()
  * }}
  */
 const View = {
-    currentTab: null,
-    previousTab: null,
+  currentTab: null,
+  previousTab: null
 }
 
 /**
- * Activate tab receives an HTMLElement from the current DOM to "enable" it 
+ * Activate tab receives an HTMLElement from the current DOM to "enable" it
  * into the state holder (View) and update the content rendered on page.
  *
  * @param {HTMLElement} tab The tab to activate
  * @returns void
  */
 function activateTab (tab) {
-    for (const child of tab.parentElement.children) {
-        child.classList.remove('active')
-    }
-    
-    tab.classList.add('active')
-    
-    View.previousTab = View.currentTab
-    View.currentTab = tab
-    
-    refreshView()
+  for (const child of tab.parentElement.children) {
+    child.classList.remove('active')
+  }
+
+  tab.classList.add('active')
+
+  View.previousTab = View.currentTab
+  View.currentTab = tab
+
+  refreshView()
 }
 
 /**
@@ -187,58 +187,59 @@ function activateTab (tab) {
  * }}
  */
 function createNewTabElement (name) {
-    const tab = document.createElement('li')
-    const removeBtn = document.createElement('a')
-    
-    tab.textContent = name
-    tab.appendChild(removeBtn)
-    removeBtn.classList.add('delete')
-    
-    if (Tabs.has(name)) {
-        throw new Error(`A tab with the name "${name}" already exists`)
-    }
+  const tab = document.createElement('li')
+  const removeBtn = document.createElement('a')
 
-    Tabs.add(name)
+  tab.textContent = name
+  tab.appendChild(removeBtn)
+  removeBtn.classList.add('delete')
 
-    return { tab, removeBtn }
+  if (Tabs.has(name)) {
+    throw new Error(`A tab with the name "${name}" already exists`)
+  }
+
+  Tabs.add(name)
+
+  return { tab, removeBtn }
 }
 
 /**
- * Add a new tab as an HTML element to the user's tabs list (navigation). If 
+ * Add a new tab as an HTML element to the user's tabs list (navigation). If
  * menu update succeeded, the new tab is moved into View.
  *
  * @param {string} name The name of the tab to add
  * @returns {HTMLElement}
  */
 function addTabToMenu (name) {
-    const add = document.getElementById('createNewTab')
-    const { tab, removeBtn } = createNewTabElement(name)
-    add.parentElement.insertBefore(tab, add)
+  const add = document.getElementById('createNewTab')
+  const { tab, removeBtn } = createNewTabElement(name)
+  add.parentElement.insertBefore(tab, add)
 
-    removeBtn.addEventListener('click', () => {
-        Tabs.delete(name)
-        add.parentElement.removeChild(tab)
+  removeBtn.addEventListener('click', () => {
+    Tabs.delete(name)
+    Memory.delete(tab)
+    add.parentElement.removeChild(tab)
 
-        if (add.parentElement.children.length > 1) {
-            activateTab(add.parentElement.children.item(0))
-        } else {
-            addTabToMenu('Default')
-        }
-    })
+    if (add.parentElement.children.length > 1) {
+      activateTab(add.parentElement.children.item(0))
+    } else {
+      addTabToMenu('Default')
+    }
+  })
 
-    activateTab(tab) // NOTE: always activate new tab 
-    tab.addEventListener('click', (e) => {
-        if (e.target === tab) {
-            activateTab(tab)
-        }
-    })
+  activateTab(tab) // NOTE: always activate new tab
+  tab.addEventListener('click', (e) => {
+    if (e.target === tab) {
+      activateTab(tab)
+    }
+  })
 
-    Memory.set(tab, {
-        'request.method': Fields['request.method'].defaults,
-        'response.status': Fields['response.status'].defaults,
-    })
+  Memory.set(tab, {
+    'request.method': Fields['request.method'].defaults,
+    'response.status': Fields['response.status'].defaults
+  })
 
-    return tab
+  return tab
 }
 
 /**
@@ -248,24 +249,24 @@ function addTabToMenu (name) {
  * @returns void
  */
 function refreshView () {
-    const tabFields = Memory.get(View.currentTab) || {}
-    for (const field of Object.keys(Fields)) {
-        const { defaults, set } = Fields[field]
-        
-        const elem = document.querySelector(`[name="${field}"]`)
-        set(elem, tabFields[field] || defaults)
-        
-        const adj = document.querySelector(`[rel="${field}"]`)
-        if (adj === null) {
-            continue
-        }
+  const tabFields = Memory.get(View.currentTab) || {}
+  for (const field of Object.keys(Fields)) {
+    const { defaults, set } = Fields[field]
 
-        if (elem.checked) {
-            adj.classList.remove('is-hidden')
-        } else {
-            adj.classList.add('is-hidden')
-        }
+    const elem = document.querySelector(`[name="${field}"]`)
+    set(elem, tabFields[field] || defaults)
+
+    const adj = document.querySelector(`[rel="${field}"]`)
+    if (adj === null) {
+      continue
     }
+
+    if (elem.checked) {
+      adj.classList.remove('is-hidden')
+    } else {
+      adj.classList.add('is-hidden')
+    }
+  }
 }
 
 /**
@@ -275,47 +276,46 @@ function refreshView () {
  * @returns {Record<string, object>}
  */
 function gatherSamplests () {
-    
+  /**
+   * @type {Record<string, object>}
+   */
+  const files = {}
+  for (const [tab, mem] of Memory.entries()) {
+    const copy = { ...mem } // NOTE: don't alter original memory
+
     /**
-     * @type {Record<string, object>}
+     * @type {{
+     *  request: Record<string, string|object>
+     *  response: Record<string, string|object>
+     * }}
      */
-    const files = {}
-    for (const [tab, mem] of Memory.entries()) {
-        const copy = { ...mem } // NOTE: don't alter original memory
-
-        /**
-         * @type {{
-         *  request: Record<string, string|object>
-         *  response: Record<string, string|object>
-         * }}
-         */
-        const json = {
-            request: { /* fill with request fields */ }, 
-            response: { /* fill with response fields */ }
-        }
-
-        Object.keys(copy).forEach((input) => {
-            if (input.startsWith('_')) {
-                if (! copy[input]) {
-                    delete copy[input.substr(1)]
-                }
-                delete copy[input]
-            }
-        })
-        Object.entries(copy).forEach(([input, value]) => {
-            const [section, field] = input.split('.', 2)
-            if (section === 'request' || section === 'response') {
-                if (['headers', 'payload', 'data'].indexOf(field) > -1) {
-                    value = JSON.parse(value)
-                }
-                json[section][field] = value
-            }
-        })
-
-        files[tab.textContent] = json
+    const json = {
+      request: { /* fill with request fields */ },
+      response: { /* fill with response fields */ }
     }
 
-    return files
+    Object.keys(copy).forEach((input) => {
+      if (input.startsWith('_')) {
+        if (!copy[input]) {
+          delete copy[input.substr(1)]
+        }
+        delete copy[input]
+      }
+    })
+    Object.entries(copy).forEach(([input, value]) => {
+      const [section, field] = input.split('.', 2)
+      if (section === 'request' || section === 'response') {
+        if (['headers', 'payload', 'data'].indexOf(field) > -1) {
+          value = JSON.parse(value)
+        }
+        json[section][field] = value
+      }
+    })
+
+    files[tab.textContent] = json
+  }
+
+  return files
 }
 
 /**
@@ -324,92 +324,90 @@ function gatherSamplests () {
  * @returns void
  */
 function download () {
-    const zip = new JSZip()
-    const type = 'blob'
-    const files = gatherSamplests()
+  const zip = new JSZip()
+  const type = 'blob'
+  const files = gatherSamplests()
 
-    for (const [file, data] of Object.entries(files)) {
-        const content = JSON.stringify(data, null, 4)
-        zip.file(`${file}.json`, `${content}\n`) // EOF
-    }
+  for (const [file, data] of Object.entries(files)) {
+    const content = JSON.stringify(data, null, 4)
+    zip.file(`${file}.json`, `${content}\n`) // EOF
+  }
 
-    zip.generateAsync({ type }).then((content) => {
-        saveAs(content, 'samplests.zip')
-    })
+  zip.generateAsync({ type }).then((content) => {
+    saveAs(content, 'samplests.zip')
+  })
 }
 
 // Register event listeners
 !(async function () {
+  addTabToMenu('Hello world')
 
-    // render selected panel
-    const panels = document.querySelectorAll(`[data-panel]`)
-    for (const panel of panels) {
-        panel.addEventListener('click', () => {
-            for (const each of panels) {
-                const ui = document.querySelector(`[rel="${each.dataset.panel}"]`)
-                if (each.dataset.panel !== panel.dataset.panel) {
-                    ui.classList.add('is-hidden')
-                    each.classList.remove('is-active')
-                } else {
-                    ui.classList.remove('is-hidden')
-                    panel.classList.add('is-active')
-                }
-            }
-        })
-    }
-
-    // add a sample tab
-    addTabToMenu('Hello world')
-    
-    // listen for new tabs
-    const createNewTab = document.getElementById('createNewTab')
-    createNewTab.addEventListener('click', () => {
-        const name = prompt(`Create a new tab`)
-        if (name) {
-            if (Tabs.has(name)) {
-                alert(`A tab with the name "${name}" already exists`)
-            } else {
-                addTabToMenu(name)
-            }
+  // Render selected panel
+  const panels = document.querySelectorAll('[data-panel]')
+  for (const panel of panels) {
+    panel.addEventListener('click', () => {
+      for (const each of panels) {
+        const ui = document.querySelector(`[rel="${each.dataset.panel}"]`)
+        if (each.dataset.panel !== panel.dataset.panel) {
+          ui.classList.add('is-hidden')
+          each.classList.remove('is-active')
+        } else {
+          ui.classList.remove('is-hidden')
+          panel.classList.add('is-active')
         }
+      }
     })
+  }
 
-    // listen for changes
-    const inputs = document.querySelectorAll('[name]')
-    for (const input of inputs) {
-        input.addEventListener('change', () => {
-            const fields = Memory.get(View.currentTab) || {}
-            fields[input.name] = Fields[input.name].get(input)
-            Memory.set(View.currentTab, fields)
-        })
+  // Listen for new tabs
+  const createNewTab = document.getElementById('createNewTab')
+  createNewTab.addEventListener('click', () => {
+    const name = prompt('Create a new tab')
+    if (name) {
+      if (Tabs.has(name)) {
+        alert(`A tab with the name "${name}" already exists`)
+      } else {
+        addTabToMenu(name)
+      }
     }
+  })
 
-    // format textarea as JSON
-    const textareas = document.querySelectorAll('textarea')
-    for (const textarea of textareas) {
-        textarea.addEventListener('change', () => {
-            formatJson(textarea, textarea.value)
-        })
-    }
-
-    // display adjacent fields if checkboxes are ticked
-    const checkboxes = document.querySelectorAll('[type="checkbox"]')
-    for (const checkbox of checkboxes) {
-        checkbox.addEventListener('click', () => {
-            const box = document.querySelector(`[rel="${checkbox.name}"]`)
-            if (checkbox.checked) {
-                box.classList.remove('is-hidden')
-            } else {
-                box.classList.add('is-hidden')
-            }
-        })
-    }
-
-    // change selected radio input if the custom field is edited
-    const statuscode = document.querySelector(`[type="number"][name="response.status"]`)
-    statuscode.addEventListener('change', () => {
-        const custom = document.querySelector(`[type="radio"][rel="custom"]`)
-        custom.checked = true
-        custom.value = statuscode.value
+  // Listen for changes on any input, select, textarea, checkbox or radio
+  const inputs = document.querySelectorAll('[name]')
+  for (const input of inputs) {
+    input.addEventListener('change', () => {
+      const fields = Memory.get(View.currentTab) || {}
+      fields[input.name] = Fields[input.name].get(input)
+      Memory.set(View.currentTab, fields)
     })
+  }
+
+  // Format textarea as JSON
+  const textareas = document.querySelectorAll('textarea')
+  for (const textarea of textareas) {
+    textarea.addEventListener('change', () => {
+      formatJson(textarea, textarea.value)
+    })
+  }
+
+  // Display adjacent fields if checkboxes are ticked
+  const checkboxes = document.querySelectorAll('[type="checkbox"]')
+  for (const checkbox of checkboxes) {
+    checkbox.addEventListener('click', () => {
+      const box = document.querySelector(`[rel="${checkbox.name}"]`)
+      if (checkbox.checked) {
+        box.classList.remove('is-hidden')
+      } else {
+        box.classList.add('is-hidden')
+      }
+    })
+  }
+
+  // Change selected radio input if the custom field is edited
+  const statuscode = document.querySelector('[type="number"][name="response.status"]')
+  statuscode.addEventListener('change', () => {
+    const custom = document.querySelector('[type="radio"][rel="custom"]')
+    custom.checked = true
+    custom.value = statuscode.value
+  })
 })()
