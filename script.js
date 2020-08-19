@@ -57,21 +57,57 @@ const TextField = {
   defaults: '',
 
   /**
-     * Get the value of an input, textarea or select element.
-     *
-     * @param {HTMLElement} elem An input, textarea or select
-     * @returns {string}
-     */
+   * Get the value of an input, textarea or select element.
+   *
+   * @param {HTMLElement} elem An input, textarea or select
+   * @returns {string}
+   */
   get: (elem) => elem.value,
 
   /**
-     * Set the value for an input, textarea or select element.
-     *
-     * @param {HTMLElement} elem An input, textarea or select
-     * @param {string} data
-     * @returns void
-     */
+   * Set the value for an input, textarea or select element.
+   *
+   * @param {HTMLElement} elem An input, textarea or select
+   * @param {string} data
+   * @returns void
+   */
   set: (elem, data) => elem.value = data
+}
+
+/**
+ * List field handler.
+ *
+ * @type {{
+ *  defaults: string
+ *  get: CallableFunction
+ *  set: CallableFunction
+ * }}
+ *
+ */
+const ListField = {
+  defaults: '',
+
+  /**
+   * Get the value of radio.
+   *
+   * @param {HTMLElement} elem
+   */
+  get: (elem) => elem.value,
+
+  /**
+   * Set the value for a radio.
+   *
+   * @param {HTMLElement} elem
+   * @param {boolean} data
+   */
+  set: (elem, data) => {
+    const all = document.querySelectorAll(`[name="${elem.name}"]`)
+    for (const each of all) {
+      if (each.value === data) {
+        each.checked = true
+      }
+    }
+  }
 }
 
 /**
@@ -87,18 +123,18 @@ const BoolField = {
   defaults: false,
 
   /**
-     * Get the value of checked or a radio element.
-     *
-     * @param {HTMLElement} elem
-     */
+   * Get the value of checkbox.
+   *
+   * @param {HTMLElement} elem
+   */
   get: (elem) => !!elem.checked,
 
   /**
-     * Set the value for a checkbox or a radio element.
-     *
-     * @param {HTMLElement} elem
-     * @param {boolean} data
-     */
+   * Set the value for a checkbox.
+   *
+   * @param {HTMLElement} elem
+   * @param {boolean} data
+   */
   set: (elem, data) => elem.checked = !!data
 }
 
@@ -118,7 +154,7 @@ const Fields = {
   '_request.payload': BoolField,
 
   // Response
-  'response.status': Object.assign({}, TextField, { defaults: 200 }),
+  'response.status': Object.assign({}, ListField, { defaults: '200' }),
   'response.headers': Object.assign({}, TextField, { set: formatJson }),
   'response.data': Object.assign({}, TextField, { set: formatJson }),
   '_response.headers': BoolField,
@@ -340,7 +376,42 @@ function download () {
 
 // Register event listeners
 !(async function () {
-  addTabToMenu('Hello world')
+
+  // Restore memory state (if available)
+  const previousState = localStorage.getItem('samplests')
+  if (previousState !== null) {
+    try {
+      const memory = JSON.parse(previousState)
+      Object.entries(memory).forEach(([tabName, content]) => {
+        const tab = addTabToMenu(tabName)
+        Memory.set(tab, content)
+        activateTab(tab)
+      })
+    } catch (e) {
+      console.log(`Cannot restore last state because: ${e.message}`)
+      addTabToMenu('Welcome back')
+    }
+  } else {
+    addTabToMenu('Hello world')
+  }
+
+  // Save current memory to local storage on exit
+  window.addEventListener('beforeunload', (e) => {
+    /**
+     * @type {Record<string, object>}
+     */
+    const state = {}
+    for (const [tab, obj] of Memory.entries()) {
+      state[tab.textContent] = obj
+    }
+
+    localStorage.setItem('samplests', JSON.stringify(state))
+
+    // https://developer.mozilla.org/en-US/docs/Web/API/WindowEventHandlers/onbeforeunload
+    e.returnValue = 'Your workspace will be saved locally' 
+
+    return
+  })
 
   // Render selected panel
   const panels = document.querySelectorAll('[data-panel]')
